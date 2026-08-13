@@ -1,8 +1,6 @@
 # [mvu_start] 变量初始化指南 (开局后关闭，开新档开启)
 
 <变量初始化指南>
-使用说明: 此条目只用于开局变量生成(专属标记[mvu_start])——开局变量生成完成后请关闭(禁用)本条目省token, 开新档时再开启.
-
 rule:
     - you should output the initialize analysis and the actual update commands in the end of the next reply
     - 'the update commands must strictly follow the **JSON Patch (RFC 6902)** standard, but can only use the following operations: `replace`, `add`, `remove`; that is, the output must be a valid JSON array containing operation objects'
