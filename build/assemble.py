@@ -4,7 +4,7 @@
 架构升级版（2026-08）：
 - MVU 正式版运行时（去 @beta）
 - 变量验证脚本内嵌化（scarlet_core.js，去 klona 远程依赖，去 apiConfig）
-- 状态栏 UI 内嵌化（替换 1.2MB 远程混淆 UI）
+- 状态栏 UI 改为仓库 CDN 挂载（D1 git 挂载范式，双源 fallback loader，push 即热修）
 - depth_prompt 空配置移除
 - 世界书内容来自 source/worldbook/*.md（内容冻结，仅元数据可动）
 """
@@ -39,11 +39,13 @@ def main():
     extras = load_json('extensions_other.json')
     wb_manifest = load_json(os.path.join('worldbook', 'manifest.json'))
 
-    # ---- statusbar regex: embed the local scarlet UI (localized; no HymnStudio remote) ----
-    scarlet_html = read(os.path.join('ui', 'scarlet', 'index.html'))
-    assert '```' not in scarlet_html, "fence collision in scarlet UI"
+    # ---- statusbar regex: mount scarlet UI from repo CDN (git 挂载, D1 范式) ----
+    # loader 双源 fallback: cdn.jsdelivr.net → testingcf.jsdelivr.net; 全挂显示可见错误, 不 brick
+    # UI 主体: https://cdn.jsdelivr.net/gh/sage1717/guanchang-simulator@main/source/ui/scarlet/index.html (push 即热修, @main 12h CDN TTL)
+    loader_html = read(os.path.join('ui', 'loader.html'))
+    assert '```' not in loader_html, "fence collision in loader"
     statusbar = next(r for r in regex if r['scriptName'] == '状态栏')
-    statusbar['replaceString'] = "```html\n" + scarlet_html + "\n```"
+    statusbar['replaceString'] = "```html\n" + loader_html + "\n```"
     regex = [statusbar if r['scriptName'] == '状态栏' else r for r in regex]
 
     # ---- worldbook entries: metadata from manifest, content from md files ----
@@ -121,7 +123,7 @@ def main():
     checks.append(('no klona', all('klona' not in s['content'] for s in scripts)))
     checks.append(('no @beta', all('@beta' not in s['content'] for s in scripts)))
     checks.append(('no depth_prompt', 'depth_prompt' not in extensions))
-    checks.append(('ui embedded scarlet (localized)', 'HymnStudio' not in regex[1]['replaceString'] and regex[1]['replaceString'].startswith('```html')))
+    checks.append(('ui mounted from repo CDN', 'guanchang-simulator@main/source/ui/scarlet/index.html' in regex[1]['replaceString'] and 'HymnStudio' not in regex[1]['replaceString'] and len(regex[1]['replaceString']) < 10000))
     checks.append(('world kept', extensions.get('world') == '官场模拟器'))
     checks.append(('first_mes kept', card['first_mes'] == '[初始化完成]\r\n<StatusPlaceHolderImpl/>'))
     for name, ok in checks:
