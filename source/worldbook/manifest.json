@@ -95,7 +95,7 @@
   "id": 3,
   "keys": [],
   "secondary_keys": [],
-  "comment": "[mvu_plot] 交互范式",
+  "comment": "[mvu_plot] 权色互动法则",
   "constant": true,
   "selective": true,
   "insertion_order": 52,
@@ -135,13 +135,13 @@
    "triggers": [],
    "ignore_budget": false
   },
-  "file": "03_[mvu_plot] 交互范式.md"
+  "file": "03_[mvu_plot] 权色互动法则.md"
  },
  {
   "id": 4,
   "keys": [],
   "secondary_keys": [],
-  "comment": "[mvu_plot] 美学纲领",
+  "comment": "[mvu_plot] 权色美学",
   "constant": true,
   "selective": true,
   "insertion_order": 53,
@@ -181,7 +181,7 @@
    "triggers": [],
    "ignore_budget": false
   },
-  "file": "04_[mvu_plot] 美学纲领.md"
+  "file": "04_[mvu_plot] 权色美学.md"
  },
  {
   "id": 5,
