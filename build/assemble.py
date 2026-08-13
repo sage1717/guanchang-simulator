@@ -32,6 +32,13 @@ def main():
     extras = load_json('extensions_other.json')
     wb_manifest = load_json(os.path.join('worldbook', 'manifest.json'))
 
+    # ---- statusbar regex: embed the local scarlet UI (localized; no HymnStudio remote) ----
+    scarlet_html = read(os.path.join('ui', 'scarlet', 'index.html'))
+    assert '```' not in scarlet_html, "fence collision in scarlet UI"
+    statusbar = next(r for r in regex if r['scriptName'] == '状态栏')
+    statusbar['replaceString'] = "```html\n" + scarlet_html + "\n```"
+    regex = [statusbar if r['scriptName'] == '状态栏' else r for r in regex]
+
     # ---- worldbook entries: metadata from manifest, content from md files ----
     entries = []
     for m in wb_manifest:
@@ -107,7 +114,7 @@ def main():
     checks.append(('no klona', all('klona' not in s['content'] for s in scripts)))
     checks.append(('no @beta', all('@beta' not in s['content'] for s in scripts)))
     checks.append(('no depth_prompt', 'depth_prompt' not in extensions))
-    checks.append(('ui remote scarlet restored', 'HymnStudio/card_rs/scarlet/index.html' in regex[1]['replaceString']))
+    checks.append(('ui embedded scarlet (localized)', 'HymnStudio' not in regex[1]['replaceString'] and regex[1]['replaceString'].startswith('```html')))
     checks.append(('world kept', extensions.get('world') == '绯色官途'))
     checks.append(('first_mes kept', card['first_mes'] == '[初始化完成]\r\n<StatusPlaceHolderImpl/>'))
     for name, ok in checks:
