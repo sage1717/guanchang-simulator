@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""绯色官途 · 装配脚本：source/ → dist/card.json (V3) + dist/绯色官途.png
+"""官场模拟器 · 装配脚本：source/ → dist/card.json (V3) + dist/官场模拟器.png
 
 架构升级版（2026-08）：
 - MVU 正式版运行时（去 @beta）
@@ -122,7 +122,7 @@ def main():
     checks.append(('no @beta', all('@beta' not in s['content'] for s in scripts)))
     checks.append(('no depth_prompt', 'depth_prompt' not in extensions))
     checks.append(('ui embedded scarlet (localized)', 'HymnStudio' not in regex[1]['replaceString'] and regex[1]['replaceString'].startswith('```html')))
-    checks.append(('world kept', extensions.get('world') == '绯色官途'))
+    checks.append(('world kept', extensions.get('world') == '官场模拟器'))
     checks.append(('first_mes kept', card['first_mes'] == '[初始化完成]\r\n<StatusPlaceHolderImpl/>'))
     for name, ok in checks:
         print(f"  [{'PASS' if ok else 'FAIL'}] {name}")
@@ -130,9 +130,9 @@ def main():
         sys.exit(1)
 
     # ---- PNG embedding (keep original image shell) ----
-    png_src = os.path.join(ROOT, '绯色官途.png')
+    png_src = os.path.join(ROOT, '官场模拟器.png')
     if os.path.exists(png_src):
-        out_png = os.path.join(DST, '绯色官途.png')
+        out_png = os.path.join(DST, '官场模拟器.png')
         with open(png_src, 'rb') as f:
             png = f.read()
         payload = base64.b64encode(json.dumps(card, ensure_ascii=False).encode('utf-8')).decode('ascii')

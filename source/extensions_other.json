@@ -1,8 +1,8 @@
 {
- "world": "绯色官途",
- "depth_prompt": {
-  "prompt": "",
-  "depth": 4,
-  "role": "system"
- }
+  "world": "官场模拟器",
+  "depth_prompt": {
+    "prompt": "",
+    "depth": 4,
+    "role": "system"
+  }
 }
