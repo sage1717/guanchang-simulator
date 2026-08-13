@@ -12,7 +12,7 @@
     <Analysis>$(IN ENGLISH, no more than 80 words)
     - ${calculate time passed: ...}
     - ${decide whether dramatic updates are allowed as it's in a special case or the time passed is more than usual: yes/no}
-    - ${analyze every variable based on its corresponding `check`, according only to current reply instead of previous plots: ...}
+    - ${analyze variables touched by this reply against their corresponding `check`; untriggered variables may be skipped: ...}
     </Analysis>
     <JSONPatch>
     [
