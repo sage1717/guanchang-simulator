@@ -29,6 +29,13 @@ def main():
     for fn in sorted(os.listdir(os.path.join(SRC, 'scripts'))):
         if fn.startswith('script_') and fn.endswith('.json'):
             scripts.append(load_json(os.path.join('scripts', fn)))
+    # single source of truth for script bodies:
+    # 变量验证 -> scarlet_core.js (maintained source), MVU -> stable bundle import
+    for s in scripts:
+        if s['name'] == '变量验证':
+            s['content'] = read(os.path.join('scripts', 'scarlet_core.js'))
+        elif s['name'] == 'MVU':
+            s['content'] = "import 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js';"
     extras = load_json('extensions_other.json')
     wb_manifest = load_json(os.path.join('worldbook', 'manifest.json'))
 
