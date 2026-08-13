@@ -41,7 +41,7 @@ def main():
 
     # ---- statusbar regex: mount scarlet UI from repo CDN (git 挂载, D1 范式) ----
     # loader 双源 fallback: cdn.jsdelivr.net → testingcf.jsdelivr.net; 全挂显示可见错误, 不 brick
-    # UI 主体: https://cdn.jsdelivr.net/gh/sage1717/guanchang-simulator@main/source/ui/scarlet/index.html (push 即热修, @main 12h CDN TTL)
+    # UI 主体: https://cdn.jsdelivr.net/gh/sage1717/guanchang-simulator@master/source/ui/scarlet/index.html (push 即热修, @master 12h CDN TTL)
     loader_html = read(os.path.join('ui', 'loader.html'))
     assert '```' not in loader_html, "fence collision in loader"
     statusbar = next(r for r in regex if r['scriptName'] == '状态栏')
@@ -123,7 +123,7 @@ def main():
     checks.append(('no klona', all('klona' not in s['content'] for s in scripts)))
     checks.append(('no @beta', all('@beta' not in s['content'] for s in scripts)))
     checks.append(('no depth_prompt', 'depth_prompt' not in extensions))
-    checks.append(('ui mounted from repo CDN', 'guanchang-simulator@main/source/ui/scarlet/index.html' in regex[1]['replaceString'] and 'HymnStudio' not in regex[1]['replaceString'] and len(regex[1]['replaceString']) < 10000))
+    checks.append(('ui mounted from repo CDN', 'guanchang-simulator@master/source/ui/scarlet/index.html' in regex[1]['replaceString'] and 'HymnStudio' not in regex[1]['replaceString'] and len(regex[1]['replaceString']) < 10000))
     checks.append(('world kept', extensions.get('world') == '官场模拟器'))
     checks.append(('first_mes kept', card['first_mes'] == '[初始化完成]\r\n<StatusPlaceHolderImpl/>'))
     for name, ok in checks:
