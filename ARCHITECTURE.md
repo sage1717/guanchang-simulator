@@ -139,7 +139,25 @@ Tavern Helper + **MVU（MagVarUpdate @beta）** + 自定义 scarlet.js 更新脚
 - 用户明确：原卡自带的额外 API 配置属画蛇添足，忽略（本世界书文件未含，可能位于原完整卡其他部分）
 - 条目 id 不连续（缺 31/37/38/40-46），为历史删除残留，不影响运行
 
-## 7. 技术栈判定
+## 8. 架构升级（2026-08-13，内容冻结）
+
+工程结构：`source/`（card.json 卡壳 + regex.json + scripts/ + worldbook/ 39 条 + ui/statusbar.html）+ `build/assemble.py` → `dist/card.json` + `dist/绯色官途.png`（原图壳嵌入 chara+ccv3，双 payload roundtrip 校验）。git 管理。
+
+| 项 | 原卡 | 升级后 |
+|---|---|---|
+| MVU 运行时 | `MagVarUpdate@beta` | `MagVarUpdate/artifact/bundle.js` 正式版 |
+| 变量验证脚本 | 远程 import `HymnStudio/card_rs/scarlet/index.js` | 内嵌 `source/scripts/scarlet_core.js`（去 klona → 内联 JSON clone；registerMvuSchema 保留） |
+| apiConfig | localhost:1234 LM Studio（不生效，画蛇添足） | 删除 |
+| 状态栏 | 远程 `$('body').load(scarlet/index.html)`（1.2MB 混淆 UI） | 内嵌 `source/ui/statusbar.html`（5.2KB，Mvu.getMvuData 读 stat_data 渲染，事件刷新） |
+| depth_prompt | 空配置（冗余） | 移除 |
+| 双 payload | chara/ccv3 一致 | 保持一致（roundtrip 断言） |
+| 世界书 | 39 条 | 内容零差异（逐条 byte 对比） |
+
+验证：11 项装配断言全 PASS（spec v3 / 39 条目 / 2 脚本 / 3 正则 / 无 apiConfig / 无 klona / 无 @beta / 无 depth_prompt / UI 内嵌 / world 保留 / first_mes 保留）+ PNG payload roundtrip。
+
+已知保留项：`world` 外绑（与内嵌 character_book 并存，内容同源，后续内容改动需同步两处或改装配源）；registerMvuSchema 仍走 testingcf CDN（运行时必需，B1 建议的 cdn.jsdelivr.net 主镜像可后续加 fallback）；`enableExtraModelParsing=false` 单模型模式维持原行为；alternate_greetings[0] 内元信息（thinking/tucao）按内容冻结未动，后续二创时清洗。
+
+待真机验证：ST 导入 dist PNG → 新聊天 → 初始化/更新/状态栏渲染。
 
 - 运行依赖：ST + Tavern Helper（MVU 路由）+ MVU Zod 运行时（registerMvuSchema，中文键名）
 - 变量存储：`stat_data`（message variable，投影宏 get_message_variable）
