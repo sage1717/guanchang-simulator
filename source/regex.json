@@ -83,5 +83,22 @@
   "substituteRegex": 0,
   "minDepth": null,
   "maxDepth": null
+ },
+ {
+  "id": "a1b2c3d4-0003-4a4a-8b8b-333333333333",
+  "scriptName": "清理孤立通讯标签",
+  "findRegex": "/<\\/?(?:sms|wx)\\s*>/g",
+  "replaceString": "",
+  "trimStrings": [],
+  "placement": [
+   2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": true,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
  }
 ]

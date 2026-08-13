@@ -116,7 +116,7 @@ def main():
     checks.append(('spec v3', card['spec'] == 'chara_card_v3'))
     checks.append(('entries=42', len(entries) == 42))
     checks.append(('scripts=2', len(scripts) == 2))
-    checks.append(('regex=5', len(regex) == 5))
+    checks.append(('regex=6', len(regex) == 6))
     checks.append(('no apiConfig', all('apiConfig' not in s.get('data', {}) for s in scripts)))
     checks.append(('no klona', all('klona' not in s['content'] for s in scripts)))
     checks.append(('no @beta', all('@beta' not in s['content'] for s in scripts)))
