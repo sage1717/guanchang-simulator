@@ -1,4 +1,4 @@
-# [mvu_plot][mvu_update][mvu_start]知识注入
+# [mvu_plot][mvu_update][mvu_start] 公务员体制认知
 
 <知识注入>
 指令: 激活模型内部关于"中国公务员制度"的所有知识.

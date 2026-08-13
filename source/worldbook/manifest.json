@@ -49,7 +49,7 @@
   "id": 1,
   "keys": [],
   "secondary_keys": [],
-  "comment": "[mvu_plot][mvu_update][mvu_start]知识注入",
+  "comment": "[mvu_plot][mvu_update][mvu_start] 公务员体制认知",
   "constant": true,
   "selective": true,
   "insertion_order": 51,
@@ -89,7 +89,7 @@
    "triggers": [],
    "ignore_budget": false
   },
-  "file": "01_[mvu_plot][mvu_update][mvu_start]知识注入.md"
+  "file": "01_[mvu_plot][mvu_update][mvu_start] 公务员体制认知.md"
  },
  {
   "id": 3,
@@ -1521,7 +1521,7 @@
   "id": 35,
   "keys": [],
   "secondary_keys": [],
-  "comment": "[mvu_start] 变量初始化指南 (别关)",
+  "comment": "[mvu_start] 变量初始化指南 (开局后关闭，开新档开启)",
   "constant": true,
   "selective": true,
   "insertion_order": 500,
@@ -1561,7 +1561,7 @@
    "triggers": [],
    "ignore_budget": false
   },
-  "file": "35_[mvu_start] 变量初始化指南 (别关).md"
+  "file": "35_[mvu_start] 变量初始化指南 (开局后关闭，开新档开启).md"
  },
  {
   "id": 36,
