@@ -1,0 +1,39 @@
+0	0	18	00_[mvu_plot][mvu_update][mvu_start] 底层协议 [分割线].md	[mvu_plot][mvu_update][mvu_start] 底层协议 [分割线]
+1	51	242	01_[mvu_plot][mvu_update][mvu_start]知识注入.md	[mvu_plot][mvu_update][mvu_start]知识注入
+2	50	171	02_[mvu_plot]沙盒模式.md	[mvu_plot]沙盒模式
+3	52	473	03_[mvu_plot] 交互范式.md	[mvu_plot] 交互范式
+4	53	402	04_[mvu_plot] 美学纲领.md	[mvu_plot] 美学纲领
+5	100	17	05_[mvu_plot][mvu_update][mvu_start] 基础架构 [分割线].md	[mvu_plot][mvu_update][mvu_start] 基础架构 [分割线]
+6	151	505	06_[mvu_plot][mvu_update][mvu_start] 二十一世纪中国官场.md	[mvu_plot][mvu_update][mvu_start] 二十一世纪中国官场
+7	152	1001	07_[mvu_plot][mvu_update][mvu_start] 政治气候演变表.md	[mvu_plot][mvu_update][mvu_start] 政治气候演变表
+8	153	437	08_[mvu_plot] 权力核心.md	[mvu_plot] 权力核心
+9	154	1077	09_[mvu_plot] 官阶天梯.md	[mvu_plot] 官阶天梯
+10	155	414	10_[mvu_plot] 派系山头.md	[mvu_plot] 派系山头
+11	156	426	11_[mvu_plot] 官场女性.md	[mvu_plot] 官场女性
+12	180	13	12_[mvu_plot] 官场核心风味包DLC-开始.md	[mvu_plot] 官场核心风味包DLC-开始
+13	181	216	13_[mvu_plot] DLC-职务兼任.md	[mvu_plot] DLC-职务兼任
+14	182	262	14_[mvu_plot] DLC-会议生态.md	[mvu_plot] DLC-会议生态
+15	183	239	15_[mvu_plot] DLC-文书系统.md	[mvu_plot] DLC-文书系统
+16	184	255	16_[mvu_plot] DLC-组织人事.md	[mvu_plot] DLC-组织人事
+17	185	258	17_[mvu_plot] DLC-监督三剑.md	[mvu_plot] DLC-监督三剑
+18	199	14	18_[mvu_plot] 官场核心风味包DLC-开始.md	[mvu_plot] 官场核心风味包DLC-开始
+19	200	17	19_[mvu_plot] 核心交互 [分割线].md	[mvu_plot] 核心交互 [分割线]
+20	250	628	20_[mvu_plot] 晋升处分.md	[mvu_plot] 晋升处分
+21	251	539	21_[mvu_plot] 官言官语.md	[mvu_plot] 官言官语
+22	252	451	22_[mvu_plot] 人情关系.md	[mvu_plot] 人情关系
+23	253	350	23_[mvu_plot] 政治斗争.md	[mvu_plot] 政治斗争
+24	254	641	24_[mvu_plot] 权力暗面.md	[mvu_plot] 权力暗面
+25	300	17	25_[mvu_plot] 动态演绎 [分割线].md	[mvu_plot] 动态演绎 [分割线]
+26	301	479	26_[mvu_plot] 合理性检查.md	[mvu_plot] 合理性检查
+27	302	463	27_[mvu_plot] 时间规则.md	[mvu_plot] 时间规则
+28	303	1586	28_[mvu_plot] NPC生成与回收.md	[mvu_plot] NPC生成与回收
+29	304	3730	29_[mvu_plot] 叙事引擎.md	[mvu_plot] 叙事引擎
+30	350	1442	30_[mvu_plot] 演绎部分再简化版[开启的话要关闭301~304].md	[mvu_plot] 演绎部分再简化版[开启的话要关闭301~304]
+32	400	18	32_[mvu_plot][mvu_update][mvu_start] 数值系统 [分割线].md	[mvu_plot][mvu_update][mvu_start] 数值系统 [分割线]
+33	890	16432	33_[mvu_update] 变量更新规则 (别关).md	[mvu_update] 变量更新规则 (别关)
+34	900	25224	34_[mvu_update] 变量输出格式 (别关).md	[mvu_update] 变量输出格式 (别关)
+35	500	33893	35_[mvu_start] 变量初始化指南 (别关).md	[mvu_start] 变量初始化指南 (别关)
+36	490	10512	36_[mvu_update][mvu_start] 变量zod (让AI了解变量结构，别关).md	[mvu_update][mvu_start] 变量zod (让AI了解变量结构，别关)
+39	402	789	39_[mvu_plot][mvu_update][mvu_start] 官场能力数值解析.md	[mvu_plot][mvu_update][mvu_start] 官场能力数值解析
+47	403	101	47_[mvu_update][mvu_plot][mvu_start] MVU.md	[mvu_update][mvu_plot][mvu_start] MVU
+48	1000	1126	48_[initvar] [mvu_plot] (别改标签，别开启).md	[initvar] [mvu_plot] (别改标签，别开启)

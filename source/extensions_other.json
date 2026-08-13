@@ -1,0 +1,8 @@
+{
+ "world": "绯色官途",
+ "depth_prompt": {
+  "prompt": "",
+  "depth": 4,
+  "role": "system"
+ }
+}

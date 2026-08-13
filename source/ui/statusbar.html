@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<style>
+  :root{
+    --fg:#c9b98a; --fg-dim:#8a7f6a; --bg:#171412; --panel:#211c18; --line:#3a3228;
+    --red:#a83232; --gold:#d4af37;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--fg);font:12px/1.5 "Microsoft YaHei","PingFang SC",sans-serif;padding:8px 10px}
+  #sb{display:flex;flex-direction:column;gap:6px;min-height:52px}
+  .row{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center}
+  .row b{color:var(--gold);font-weight:600;margin-right:3px}
+  .bar{height:6px;background:#2a241e;border-radius:3px;overflow:hidden;min-width:60px;display:inline-block;vertical-align:middle}
+  .bar i{display:block;height:100%;background:linear-gradient(90deg,#8a2b2b,#d4af37)}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:4px;padding:5px 8px;width:100%}
+  .box .t{color:var(--fg-dim);font-size:11px;margin-bottom:2px;letter-spacing:2px}
+  .lbl{color:var(--fg-dim)}
+  #persons span{background:#2a241e;border:1px solid var(--line);border-radius:3px;padding:0 6px;margin-right:4px;display:inline-block}
+  .dim{color:var(--fg-dim)}
+</style>
+</head>
+<body>
+<div id="sb">
+  <div class="row" id="line-top"><span class="dim">状态读取中…</span></div>
+  <div class="box"><div class="t">当前场景</div><div id="line-scene" class="dim">—</div></div>
+  <div class="row" id="line-pos"><span class="dim">—</span></div>
+  <div class="box"><div class="t">能力十维</div><div id="line-ability" class="dim">—</div></div>
+  <div class="row" id="line-lists"><span class="dim">—</span></div>
+</div>
+<script type="module">
+const $ = s => document.querySelector(s);
+const esc = s => (s === undefined || s === null ? '' : String(s));
+
+function bar(v, max = 100){
+  const p = Math.max(0, Math.min(100, Number(v) / max * 100));
+  return `<span class="bar"><i style="width:${p.toFixed(0)}%"></i></span>`;
+}
+
+async function readStat(){
+  // level 1: Mvu message variable
+  try{
+    if (typeof Mvu !== 'undefined' && typeof Mvu.getMvuData === 'function'){
+      const d = Mvu.getMvuData({type:'message'});
+      if (d && d.stat_data) return d.stat_data;
+    }
+  }catch(e){}
+  // level 2: TH chat variables
+  try{
+    if (typeof getVariables === 'function'){
+      const v = getVariables({type:'chat'});
+      if (v && v.stat_data) return v.stat_data;
+    }
+  }catch(e){}
+  return null;
+}
+
+function render(){
+  readStat().then(s => {
+    if(!s){ $('#line-top').innerHTML = '<span class="dim">暂无变量数据</span>'; return; }
+    const g = s.时空舆情 || {};
+    const d = g.当前日期 || {};
+    const date = [d.年, d.月, d.日].filter(v => v && Number(v) > 0).join('-') || '未知日期';
+    $('#line-top').innerHTML =
+      `<b>${esc(date)}</b> ${esc(d.星期||'')} ${esc(g.当前时间||'')} ` +
+      `<span class="lbl">·</span> ${esc(g.当前地点||'—')} ` +
+      `<span class="lbl">·</span> ${esc(g.政治气候||'—')}`;
+    const sc = s.当前场景 || {};
+    const persons = Array.isArray(sc.在场人物) && sc.在场人物.length
+      ? sc.在场人物.map(p => `<span>${esc(p)}</span>`).join('') : '<span class="dim">无</span>';
+    $('#line-scene').innerHTML =
+      `<b>${esc(sc.场景类型||'—')}</b> ${esc(sc.气氛基调||'')}<br>${esc(sc.场景速写||'')}<br>` +
+      `<span class="lbl">在场：</span>${persons}`;
+    const pa = s.个人档案 || {};
+    const cur = pa.现任职务 || {};
+    const ab = pa.能力评估 || {};
+    $('#line-pos').innerHTML =
+      `<b>${esc(cur.职务名称||'未任职')}</b> ${esc(cur.级别||'')} ` +
+      `<span class="lbl">·</span> ${esc(cur.任职单位||'')} ` +
+      `<span class="lbl">·</span> ${esc((pa.基本信息||{}).姓名||'')}`;
+    const abl = Object.entries(ab).map(([k,v]) => `${esc(k)} ${bar(v)} ${esc(v)}`).join(' ');
+    $('#line-ability').innerHTML = abl || '<span class="dim">—</span>';
+    const ri = s.关系索引 || {};
+    const cnt = [['靠山',ri.靠山列表],['对手',ri.竞争对手列表],['绯色',ri.绯色对象列表],['嫡系',ri.核心嫡系列表],['宿敌',ri.政治宿敌列表]]
+      .filter(([,arr]) => Array.isArray(arr) && arr.length)
+      .map(([k,arr]) => `${k}${arr.length}`).join(' ');
+    const todo = (s.机遇与危机||{}).待办事项 || {};
+    const todoN = Object.keys(todo).length;
+    $('#line-lists').innerHTML =
+      (cnt ? `<span class="lbl">索引：</span>${esc(cnt)} ` : '') +
+      (todoN ? `<span class="lbl">·</span> 待办 ${todoN} 项` : '');
+  }).catch(()=>{ $('#line-top').innerHTML = '<span class="dim">读取失败</span>'; });
+}
+
+let timer = null;
+function schedule(){ if(timer) return; timer = setTimeout(()=>{ timer=null; render(); }, 200); }
+
+render();
+try{
+  const ev = (typeof Mvu !== 'undefined' && Mvu.events) ? Mvu.events : {};
+  const names = ['VARIABLE_UPDATE_ENDED','VARIABLE_INITIALIZED','MESSAGE_UPDATED','MESSAGE_SENT'];
+  for (const n of names){
+    const en = ev[n] || (n === 'VARIABLE_UPDATE_ENDED' ? 'mag_variable_update_ended' : null);
+    if (en && typeof window.addEventListener === 'function') window.addEventListener(en, schedule);
+  }
+}catch(e){}
+</script>
+</body>
+</html>
