@@ -114,7 +114,7 @@ def main():
     # ---- validation ----
     checks = []
     checks.append(('spec v3', card['spec'] == 'chara_card_v3'))
-    checks.append(('entries=37', len(entries) == 37))
+    checks.append(('entries=38', len(entries) == 38))
     checks.append(('scripts=2', len(scripts) == 2))
     checks.append(('regex=3', len(regex) == 3))
     checks.append(('no apiConfig', all('apiConfig' not in s.get('data', {}) for s in scripts)))
