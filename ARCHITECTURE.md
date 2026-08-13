@@ -148,7 +148,7 @@ Tavern Helper + **MVU（MagVarUpdate @beta）** + 自定义 scarlet.js 更新脚
 | MVU 运行时 | `MagVarUpdate@beta` | `MagVarUpdate/artifact/bundle.js` 正式版 |
 | 变量验证脚本 | 远程 import `HymnStudio/card_rs/scarlet/index.js` | 内嵌 `source/scripts/scarlet_core.js`（去 klona → 内联 JSON clone；registerMvuSchema 保留） |
 | apiConfig | localhost:1234 LM Studio（不生效，画蛇添足） | 删除 |
-| 状态栏 | 远程 `$('body').load(scarlet/index.html)`（1.2MB 混淆 UI） | 内嵌 `source/ui/statusbar.html`（5.2KB，Mvu.getMvuData 读 stat_data 渲染，事件刷新） |
+| 状态栏/开局页 | 远程 `$('body').load(scarlet/index.html)`（1.2MB，**游戏界面框架本体：开局创建页+主界面+状态栏一体**） | **恢复原样，远程加载保留**（重写版已废弃删除） |
 | depth_prompt | 空配置（冗余） | 移除 |
 | 双 payload | chara/ccv3 一致 | 保持一致（roundtrip 断言） |
 | 世界书 | 39 条 | 内容零差异（逐条 byte 对比） |

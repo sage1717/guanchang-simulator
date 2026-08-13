@@ -107,7 +107,7 @@ def main():
     checks.append(('no klona', all('klona' not in s['content'] for s in scripts)))
     checks.append(('no @beta', all('@beta' not in s['content'] for s in scripts)))
     checks.append(('no depth_prompt', 'depth_prompt' not in extensions))
-    checks.append(('ui embedded', 'testingcf.jsdelivr.net/gh/HymnStudio' not in regex[1]['replaceString']))
+    checks.append(('ui remote scarlet restored', 'HymnStudio/card_rs/scarlet/index.html' in regex[1]['replaceString']))
     checks.append(('world kept', extensions.get('world') == '绯色官途'))
     checks.append(('first_mes kept', card['first_mes'] == '[初始化完成]\r\n<StatusPlaceHolderImpl/>'))
     for name, ok in checks:
