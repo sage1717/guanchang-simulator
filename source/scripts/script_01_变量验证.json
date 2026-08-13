@@ -10,7 +10,7 @@
   "buttons": []
  },
  "data": {
-  "enableExtraModelParsing": true,
+  "enableExtraModelParsing": false,
   "useMainApi": true,
   "promptConfig": {
    "sendPreset": false,
