@@ -1,0 +1,100 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:transparent;padding:4px 0}
+#ui{width:100%;max-width:360px;margin:0 auto}
+/* 诺基亚短信 */
+.nokia{background:linear-gradient(180deg,#3a3d42,#2b2d31);border-radius:18px;padding:14px 12px 16px;box-shadow:0 3px 14px rgba(0,0,0,.35)}
+.nokia-brand{font-family:Arial,sans-serif;font-size:9px;letter-spacing:2px;color:#8a8d94;padding:0 2px 6px}
+.nokia-scr{background:#8fae7b;border:2px solid #222;border-radius:4px;padding:8px 8px 6px;font-family:'Courier New',monospace;color:#1c2a12;min-height:90px}
+.nokia-hdr{border-bottom:1px solid rgba(28,42,18,.35);padding-bottom:4px;margin-bottom:4px;font-weight:bold;font-size:13px}
+.nokia-row{font-size:12px;line-height:1.45;padding:2px 0;word-break:break-word}
+.nokia-row b{font-weight:bold}
+/* 微信 */
+.wx{background:#ededed;border-radius:12px;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,.18)}
+.wx-hd{background:#ededed;padding:9px 14px;text-align:center;font-size:14px;font-weight:500;color:#111;border-bottom:1px solid #d9d9d9}
+.wx-hd .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-right:5px;vertical-align:1px;box-shadow:0 0 4px rgba(46,204,113,.8)}
+.wx-bd{background:#ededed;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.wx-row{display:flex;flex-direction:column;max-width:78%}
+.wx-row.r{align-self:flex-start;align-items:flex-start}
+.wx-row.s{align-self:flex-end;align-items:flex-end}
+.wx-sn{font-size:10px;color:#8a8d99;padding:0 4px 2px}
+.wx-b{padding:7px 11px;font-size:13px;line-height:1.45;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+.wx-row.r .wx-b{background:#fff;border-radius:4px 4px 4px 2px}
+.wx-row.s .wx-b{background:#95ec69;border-radius:4px 4px 2px 4px}
+</style>
+</head>
+<body>
+<div id="ui"></div>
+<script>
+function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function getMsg(){try{var c=getChatMessages(getCurrentMessageId());if(!c||c.length===0)return null;return c[0].message;}catch(e){return null;}}
+function extractBlocks(msg){
+  if(!msg)return[];
+  msg=msg.replace(/<think(?:ing)?>[\s\S]*?<\/think(?:ing)?>/gi,'').replace(/^[\s\S]*?<\/think(?:ing)?>/i,'');
+  var re=/<(sms|wx)\s*>([\s\S]*?)<\/\s*\1\s*>/gi;
+  var arr=[],m;
+  while((m=re.exec(msg))!==null){arr.push({type:m[1].toLowerCase(),body:m[2]});}
+  return arr;
+}
+function getMyIndex(){
+  try{
+    var me=window.frameElement;if(!me)return 0;
+    var container=me.closest('.mes_text');if(!container)container=me.parentElement;
+    var allFrames=container.querySelectorAll('iframe');var idx=0;
+    for(var i=0;i<allFrames.length;i++){var f=allFrames[i];if(f===me)return idx;try{if(f.contentDocument&&f.contentDocument.querySelector('[data-comm-marker]'))idx++;}catch(e){}}
+    return 0;
+  }catch(e){return 0;}
+}
+function parseLines(body){
+  var ct='',msgs=[];
+  var lines=body.split(/\r?\n/);
+  for(var i=0;i<lines.length;i++){
+    var ln=lines[i].trim();
+    if(!ln)continue;
+    var hm=ln.match(/^\[联系人\|([\s\S]*?)\]$/);
+    if(hm){ct=hm[1].trim();continue;}
+    var rm=ln.match(/^\{收\|([\s\S]*?)\}$/);
+    var sm=ln.match(/^\{发\|([\s\S]*?)\}$/);
+    if(rm){msgs.push({d:'r',t:rm[1].trim()});}
+    else if(sm){msgs.push({d:'s',t:sm[1].trim()});}
+  }
+  return {ct:ct,msgs:msgs};
+}
+function renderNokia(p){
+  var h='<div class="nokia"><div class="nokia-brand">NOKIA</div><div class="nokia-scr">';
+  h+='<div class="nokia-hdr">信息 · '+esc(p.ct||'收件箱')+'</div>';
+  for(var i=0;i<p.msgs.length;i++){
+    var m=p.msgs[i];
+    h+='<div class="nokia-row"><b>'+(m.d==='s'?'我':'发件人')+':</b> '+esc(m.t).replace(/\n/g,'<br>')+'</div>';
+  }
+  return h+'</div></div>';
+}
+function renderWx(p){
+  var h='<div class="wx"><div class="wx-hd"><span class="dot"></span>'+esc(p.ct||'微信')+'</div><div class="wx-bd">';
+  for(var i=0;i<p.msgs.length;i++){
+    var m=p.msgs[i];
+    if(m.d==='r'){h+='<div class="wx-row r"><div class="wx-b">'+esc(m.t).replace(/\n/g,'<br>')+'</div></div>';}
+    else{h+='<div class="wx-row s"><div class="wx-b">'+esc(m.t).replace(/\n/g,'<br>')+'</div></div>';}
+  }
+  return h+'</div></div>';
+}
+function init(){
+  var el=document.getElementById('ui');if(!el)return;
+  var msg=getMsg();if(!msg){el.innerHTML='';return;}
+  var blocks=extractBlocks(msg);if(!blocks.length){el.innerHTML='';return;}
+  var idx=getMyIndex();
+  var b=blocks[idx]||blocks[0];
+  var p=parseLines(b.body);
+  el.innerHTML=(b.type==='sms')?renderNokia(p):renderWx(p);
+  el.setAttribute('data-comm-marker','1');
+}
+$(function(){init();});
+</script>
+</body>
+</html>
+```

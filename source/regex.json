@@ -49,5 +49,39 @@
   "maxDepth": null,
   "markdownOnly": false,
   "promptOnly": true
+ },
+ {
+  "id": "a1b2c3d4-0001-4a4a-8b8b-111111111111",
+  "scriptName": "通讯界面美化",
+  "findRegex": "/<\\s*(sms|wx)\\s*>([\\s\\S]*?)<\\/\\s*\\1\\s*>/g",
+  "replaceString": "```html\n<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"UTF-8\">\n<style>\n*{margin:0;padding:0;box-sizing:border-box}\nbody{background:transparent;padding:4px 0}\n#ui{width:100%;max-width:360px;margin:0 auto}\n/* 诺基亚短信 */\n.nokia{background:linear-gradient(180deg,#3a3d42,#2b2d31);border-radius:18px;padding:14px 12px 16px;box-shadow:0 3px 14px rgba(0,0,0,.35)}\n.nokia-brand{font-family:Arial,sans-serif;font-size:9px;letter-spacing:2px;color:#8a8d94;padding:0 2px 6px}\n.nokia-scr{background:#8fae7b;border:2px solid #222;border-radius:4px;padding:8px 8px 6px;font-family:'Courier New',monospace;color:#1c2a12;min-height:90px}\n.nokia-hdr{border-bottom:1px solid rgba(28,42,18,.35);padding-bottom:4px;margin-bottom:4px;font-weight:bold;font-size:13px}\n.nokia-row{font-size:12px;line-height:1.45;padding:2px 0;word-break:break-word}\n.nokia-row b{font-weight:bold}\n/* 微信 */\n.wx{background:#ededed;border-radius:12px;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,.18)}\n.wx-hd{background:#ededed;padding:9px 14px;text-align:center;font-size:14px;font-weight:500;color:#111;border-bottom:1px solid #d9d9d9}\n.wx-hd .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#2ecc71;margin-right:5px;vertical-align:1px;box-shadow:0 0 4px rgba(46,204,113,.8)}\n.wx-bd{background:#ededed;padding:10px 12px;display:flex;flex-direction:column;gap:8px}\n.wx-row{display:flex;flex-direction:column;max-width:78%}\n.wx-row.r{align-self:flex-start;align-items:flex-start}\n.wx-row.s{align-self:flex-end;align-items:flex-end}\n.wx-sn{font-size:10px;color:#8a8d99;padding:0 4px 2px}\n.wx-b{padding:7px 11px;font-size:13px;line-height:1.45;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.06)}\n.wx-row.r .wx-b{background:#fff;border-radius:4px 4px 4px 2px}\n.wx-row.s .wx-b{background:#95ec69;border-radius:4px 4px 2px 4px}\n</style>\n</head>\n<body>\n<div id=\"ui\"></div>\n<script>\nfunction esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}\nfunction getMsg(){try{var c=getChatMessages(getCurrentMessageId());if(!c||c.length===0)return null;return c[0].message;}catch(e){return null;}}\nfunction extractBlocks(msg){\n  if(!msg)return[];\n  msg=msg.replace(/<think(?:ing)?>[\\s\\S]*?<\\/think(?:ing)?>/gi,'').replace(/^[\\s\\S]*?<\\/think(?:ing)?>/i,'');\n  var re=/<(sms|wx)\\s*>([\\s\\S]*?)<\\/\\s*\\1\\s*>/gi;\n  var arr=[],m;\n  while((m=re.exec(msg))!==null){arr.push({type:m[1].toLowerCase(),body:m[2]});}\n  return arr;\n}\nfunction getMyIndex(){\n  try{\n    var me=window.frameElement;if(!me)return 0;\n    var container=me.closest('.mes_text');if(!container)container=me.parentElement;\n    var allFrames=container.querySelectorAll('iframe');var idx=0;\n    for(var i=0;i<allFrames.length;i++){var f=allFrames[i];if(f===me)return idx;try{if(f.contentDocument&&f.contentDocument.querySelector('[data-comm-marker]'))idx++;}catch(e){}}\n    return 0;\n  }catch(e){return 0;}\n}\nfunction parseLines(body){\n  var ct='',msgs=[];\n  var lines=body.split(/\\r?\\n/);\n  for(var i=0;i<lines.length;i++){\n    var ln=lines[i].trim();\n    if(!ln)continue;\n    var hm=ln.match(/^\\[联系人\\|([\\s\\S]*?)\\]$/);\n    if(hm){ct=hm[1].trim();continue;}\n    var rm=ln.match(/^\\{收\\|([\\s\\S]*?)\\}$/);\n    var sm=ln.match(/^\\{发\\|([\\s\\S]*?)\\}$/);\n    if(rm){msgs.push({d:'r',t:rm[1].trim()});}\n    else if(sm){msgs.push({d:'s',t:sm[1].trim()});}\n  }\n  return {ct:ct,msgs:msgs};\n}\nfunction renderNokia(p){\n  var h='<div class=\"nokia\"><div class=\"nokia-brand\">NOKIA</div><div class=\"nokia-scr\">';\n  h+='<div class=\"nokia-hdr\">信息 · '+esc(p.ct||'收件箱')+'</div>';\n  for(var i=0;i<p.msgs.length;i++){\n    var m=p.msgs[i];\n    h+='<div class=\"nokia-row\"><b>'+(m.d==='s'?'我':'发件人')+':</b> '+esc(m.t).replace(/\\n/g,'<br>')+'</div>';\n  }\n  return h+'</div></div>';\n}\nfunction renderWx(p){\n  var h='<div class=\"wx\"><div class=\"wx-hd\"><span class=\"dot\"></span>'+esc(p.ct||'微信')+'</div><div class=\"wx-bd\">';\n  for(var i=0;i<p.msgs.length;i++){\n    var m=p.msgs[i];\n    if(m.d==='r'){h+='<div class=\"wx-row r\"><div class=\"wx-b\">'+esc(m.t).replace(/\\n/g,'<br>')+'</div></div>';}\n    else{h+='<div class=\"wx-row s\"><div class=\"wx-b\">'+esc(m.t).replace(/\\n/g,'<br>')+'</div></div>';}\n  }\n  return h+'</div></div>';\n}\nfunction init(){\n  var el=document.getElementById('ui');if(!el)return;\n  var msg=getMsg();if(!msg){el.innerHTML='';return;}\n  var blocks=extractBlocks(msg);if(!blocks.length){el.innerHTML='';return;}\n  var idx=getMyIndex();\n  var b=blocks[idx]||blocks[0];\n  var p=parseLines(b.body);\n  el.innerHTML=(b.type==='sms')?renderNokia(p):renderWx(p);\n  el.setAttribute('data-comm-marker','1');\n}\n$(function(){init();});\n</script>\n</body>\n</html>\n```",
+  "trimStrings": [],
+  "placement": [
+   2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
+ },
+ {
+  "id": "a1b2c3d4-0002-4a4a-8b8b-222222222222",
+  "scriptName": "用户通讯输入转换",
+  "findRegex": "/^\\s*(?:发信息|发短信|发微信|发消息|发讯息|回信息|回短信|回微信|回消息|短信|微信)\\s*(?:给)?\\s*([^：:]{1,12})\\s*[：:]\\s*(.+)$/m",
+  "replaceString": "```html\n<!DOCTYPE html>\n<html lang=\"zh-CN\">\n<head>\n<meta charset=\"UTF-8\">\n<style>\n*{margin:0;padding:0;box-sizing:border-box}\nbody{background:transparent;padding:4px 0}\n#ui{width:100%;max-width:360px;margin:0 auto;display:flex;flex-direction:column;align-items:flex-end}\n.msg{max-width:78%;background:#95ec69;border-radius:8px 8px 3px 8px;padding:8px 12px;font-size:13px;line-height:1.5;color:#1c1c1e;word-break:break-word;box-shadow:0 1px 2px rgba(0,0,0,.08)}\n.meta{font-size:10px;color:#8a8d99;margin:4px 2px 0}\n</style>\n</head>\n<body>\n<div id=\"ui\"></div>\n<script>\nfunction esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}\nfunction getMsg(){try{var c=getChatMessages(getCurrentMessageId());if(!c||c.length===0)return null;return c[0].message;}catch(e){return null;}}\nfunction init(){\n  var el=document.getElementById('ui');if(!el)return;\n  var msg=getMsg();if(!msg){el.innerHTML='';return;}\n  var m=msg.match(/^\\s*(?:发信息|发短信|发微信|发消息|发讯息|回信息|回短信|回微信|回消息|短信|微信)\\s*(?:给)?\\s*([^：:\\r\\n]{1,12})\\s*[：:]\\s*(.+)$/m);\n  if(!m){el.innerHTML='';return;}\n  var who=m[1].trim(),txt=m[2].trim();\n  el.innerHTML='<div class=\"msg\">'+esc(txt).replace(/\\n/g,'<br>')+'</div><div class=\"meta\">发送给：'+esc(who)+'</div>';\n}\n$(function(){init();});\n</script>\n</body>\n</html>\n```",
+  "trimStrings": [],
+  "placement": [
+   2
+  ],
+  "disabled": false,
+  "markdownOnly": true,
+  "promptOnly": false,
+  "runOnEdit": true,
+  "substituteRegex": 0,
+  "minDepth": null,
+  "maxDepth": null
  }
 ]
