@@ -64,7 +64,7 @@ def main():
     extras.pop('depth_prompt', None)
     extensions = {
         'talkativeness': shell['talkativeness'],
-        'fav': str(shell['fav']).lower(),
+        'fav': shell['fav'],
         'world': extras['world'],
         'tavern_helper': {'scripts': scripts, 'variables': {}},
         'regex_scripts': regex,
