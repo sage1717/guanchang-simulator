@@ -176,5 +176,7 @@ Tavern Helper + **MVU（MagVarUpdate @beta）** + 自定义 scarlet.js 更新脚
 - 已适配（12）：app / AddCharacterModal / CharacterForm / RecordTable / SectionAccordion / AssetsSecrets / Dashboard / Faction / Opportunities / Profile / StartupInfo / Variables
 - 无需适配（8，天然自适应或小件）：ConfirmDialog / EnumSelect / MaskedText / SliderField / PromptManager / AbilityRadar / ArrayEditor / CharacterName（tooltip 220px ≤ 320px 屏）
 - 自带兜底（4，`max-width: Xvw` 已自适应）：Modal / CharacterDrawer（90vw；info-grid 2 列略挤）/ Romance（280px 轮播是滑动设计；弹窗 95vw）/ Settings（auto-fit 预设格）
-- **未修（2 真问题）**：①ImageUploader `.canvas-container` 固定 400×320，≤600px 溢出（裁剪坐标是位图系，不能纯 CSS 缩放，需 `width: min(400px,100%)` + 横向滚动策略）②StartSetup `.setup-footer` 状态文本+双按钮单行 space-between，与顶栏同款挤压竖排隐患（需 wrap）
+- **未修问题已清零（2026-08-15 修复 + 交叉验证）**：①ImageUploader `.canvas-container` 固定 400×320 溢出 → ✅ 已修（@media 内 width:100%+max-width:400px+overflow-x:auto 横向滚动；canvas 是位图坐标系，纯 CSS 缩放会错位所以走滚动）②StartSetup `.setup-footer` 竖排隐患 → **误报撤销**：StartSetup.vue 未被 router.ts 引用，是不打包的死代码；真实开局页是 StartupInfo.vue（/startup-info 路由），其 action-section 已在 dda2de5 单列化，无此问题。教训：**改文件前先验证可达性**（router 引用链 + 产物样式存在性），别对死文件白改
 - 边缘可接受（2）：MvuConfirmDialog 头栏（320px 下挤但可操作）、Characters search-box min-width 200px（<240px 才溢出，现实手机 ≥320px）
+
+**交叉验证方法**（桌面端零影响证明）：旧/新产物各提取 CSS → 剥离全部 `@media(max-width:600px)` 平衡块 → 归一化 scoped `data-v-*` 哈希（Vue 对改动组件会重算哈希，属正常连锁）→ 字节级对比完全一致 + @media 块数只增不减 + 全卡 diff 仅 replaceString + PNG roundtrip。
