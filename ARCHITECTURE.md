@@ -163,3 +163,18 @@ Tavern Helper + **MVU（MagVarUpdate @beta）** + 自定义 scarlet.js 更新脚
 - 变量存储：`stat_data`（message variable，投影宏 get_message_variable）
 - 无独立前端 UI、无正则、无 helper script 条目（纯世界书方案）
 - 双模型路由：`[mvu_plot]` → 主模型，`[mvu_update]` → 更新模型（或同模型双 pass）
+
+## 9. UI 手机化适配状态（2026-08-15）
+
+**范式**：所有适配只加 `@media (max-width: 600px)` 断点（以消息 iframe 渲染宽度 ~360px 为基准），只加不改桌面规则，桌面端不触发。UI 源码在 `tavern_helper_template/src/绯色官途前端界面/`（Vue3 工程），改源码 → `npm run build` → 产物覆盖 `source/ui/scarlet/index.html` → assemble.py。验证三件套：①构建后 grep 产物确认新规则进卡 ②全卡 diff 应仅 `regex_scripts[1].replaceString` 一处 ③PNG payload roundtrip。
+
+**已完成**：dda2de5（app.vue 骨架/SectionAccordion/Variables/StartupInfo/Dashboard）→ 759edc6（宽长比 mobileAutoHeight 开关/Profile/Faction/AssetsSecrets/Opportunities）→ 4f1b2f9（宽长比 0.5~4.0 校验防自锁死）→ a73ddc5（顶栏两行布局，根治长地点挤压竖排）。
+
+**核心坑**：flex 单行容器里长 CJK 文本被挤压到 ~1 字宽 → 逐字折行竖排（顶栏「狂飙年代」+日期+长地点三处同时中招）。修法=header 两行布局（flex-wrap + 中段 flex-basis:100% 独占第二行）+ 短标签 nowrap + flex-shrink:0。
+
+**审计结论（2026-08-15 全 30 个 vue 文件）**：
+- 已适配（12）：app / AddCharacterModal / CharacterForm / RecordTable / SectionAccordion / AssetsSecrets / Dashboard / Faction / Opportunities / Profile / StartupInfo / Variables
+- 无需适配（8，天然自适应或小件）：ConfirmDialog / EnumSelect / MaskedText / SliderField / PromptManager / AbilityRadar / ArrayEditor / CharacterName（tooltip 220px ≤ 320px 屏）
+- 自带兜底（4，`max-width: Xvw` 已自适应）：Modal / CharacterDrawer（90vw；info-grid 2 列略挤）/ Romance（280px 轮播是滑动设计；弹窗 95vw）/ Settings（auto-fit 预设格）
+- **未修（2 真问题）**：①ImageUploader `.canvas-container` 固定 400×320，≤600px 溢出（裁剪坐标是位图系，不能纯 CSS 缩放，需 `width: min(400px,100%)` + 横向滚动策略）②StartSetup `.setup-footer` 状态文本+双按钮单行 space-between，与顶栏同款挤压竖排隐患（需 wrap）
+- 边缘可接受（2）：MvuConfirmDialog 头栏（320px 下挤但可操作）、Characters search-box min-width 200px（<240px 才溢出，现实手机 ≥320px）
