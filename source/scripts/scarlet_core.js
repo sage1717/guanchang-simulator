@@ -3,22 +3,58 @@ import{registerMvuSchema as e}from'https://testingcf.jsdelivr.net/gh/StageDog/ta
   const __t=String(__v).trim();
   return(__t===''||__t==='无')?'':__t
 }
-function __npcKeys(__name,__p){
-  const __keys=[__name];
+const __POS_WORDS=['书记','市长','县长','区长','镇长','局长','处长','科长','主任','部长','厅长','队长','所长','主席','秘书长','检察长','院长','校长'];
+const __POS_ABBR={'局长':'局','处长':'处','科长':'科','部长':'部','厅长':'厅','院长':'院','校长':'校','队长':'队','所长':'所','检察长':'检'};
+const __ORG_WORDS=['发改委','公安局','财政局','教育局','民政局','人社局','组织部','宣传部','统战部','纪委监委','监察委','检察院','法院','税务局','市场监管局','卫健委','住建局','交通局','农业农村局','商务局','文旅局','应急管理局','城管局','水利局','林业局','司法局','审计局','统计局','信访局','海关','街道办','县委','市委','省委','管委会','开发区'];
+const __ORG_ABBR={'发改委':'发改','公安局':'公安','财政局':'财政','组织部':'组织','税务局':'税务','市场监管局':'市监','卫健委':'卫健','检察院':'检察','民政局':'民政','人社局':'人社'};
+function __npcAliases(__name,__p){
+  const __out=[];
   const __job=__npcField(__p&&__p.职务);
   if(__job&&__name){
-    const __pos=['书记','市长','县长','区长','镇长','局长','处长','科长','主任','部长','厅长','队长','所长','主席','秘书长','检察长','院长','校长'];
-    for(let __i=0;__i<__pos.length;__i++){
-      if(__job.indexOf(__pos[__i])!==-1){
-        const __x=__name.charAt(0)+__pos[__i];
-        if(__x!==__name&&__keys.indexOf(__x)===-1)__keys.push(__x);
+    for(let __i=0;__i<__POS_WORDS.length;__i++){
+      const __w=__POS_WORDS[__i];
+      if(__job.indexOf(__w)!==-1){
+        const __full=__name.charAt(0)+__w;
+        if(__full!==__name&&__out.indexOf(__full)===-1)__out.push(__full);
+        const __ab=__POS_ABBR[__w];
+        if(__ab){
+          const __short=__name.charAt(0)+__ab;
+          if(__short!==__name&&__out.indexOf(__short)===-1)__out.push(__short)
+        }
         break
       }
     }
   }
-  return __keys
+  return __out
 }
-function __buildNpcEntry(__name,__p){
+function __npcOrgWords(__p){
+  const __out=[];
+  const __hay=(__npcField(__p&&__p.单位)+' '+__npcField(__p&&__p.职务)).trim();
+  if(__hay){
+    for(let __i=0;__i<__ORG_WORDS.length;__i++){
+      const __w=__ORG_WORDS[__i];
+      if(__hay.indexOf(__w)!==-1){
+        if(__out.indexOf(__w)===-1)__out.push(__w);
+        const __ab=__ORG_ABBR[__w];
+        if(__ab&&__out.indexOf(__ab)===-1)__out.push(__ab);
+        if(__out.length>=4)break
+      }
+    }
+  }
+  return __out
+}
+function __memberLine(__it){
+  const __p=__it.__p||{};
+  const __parts=[__it.__n];
+  const __job=__npcField(__p.职务);
+  if(__job)__parts.push(__job);
+  const __org=__npcField(__p.单位);
+  if(__org)__parts.push(__org);
+  const __g=__p.官场关系;
+  if(__g&&typeof __g==='object'&&__npcField(__g.关系类型))__parts.push('与主角：'+__npcField(__g.关系类型));
+  return __parts.join('——')
+}
+function __buildNpcEntry(__name,__p,__keys,__filters,__logic){
   __p=__p&&typeof __p==='object'?__p:{};
   const __f=__npcField;
   const __head=[__name,__f(__p.性别),__p.年龄>0?String(__p.年龄)+'岁':'',__f(__p.体系)+(__f(__p.级别)?'·'+__f(__p.级别):''),__f(__p.职务)+(__f(__p.单位)?'（'+__f(__p.单位)+'）':''),__f(__p.派系)].filter(Boolean).join('｜');
@@ -80,7 +116,10 @@ function __buildNpcEntry(__name,__p){
   if(typeof __p.信任度==='number')__vals.push('信任'+__p.信任度);
   if(typeof __p.忠诚度==='number')__vals.push('忠诚'+__p.忠诚度);
   if(__vals.length)__lines.push(__vals.join(' '));
-  return{comment:'【人物】'+__name,keys:__npcKeys(__name,__p),position:'after_character_definition',content:__lines.join('\n')}
+  const __entry={comment:'【人物】'+__name,keys:__keys||[__name].concat(__npcAliases(__name,__p)),position:'after_character_definition',content:__lines.join('\n')};
+  if(__filters&&__filters.length)__entry.filters=__filters;
+  if(__logic)__entry.logic=__logic;
+  return __entry
 }
 async function __cleanupOrphanChatLorebooks(){
   try{
@@ -134,8 +173,36 @@ async function __syncNpcsToChatLorebook(){
     const __existing=await getLorebookEntries(__book);
     const __oldUids=(__existing||[]).filter(__en=>(__en.comment||'').indexOf('【人物】')===0).map(__en=>__en.uid);
     if(__oldUids.length)await deleteLorebookEntries(__book,__oldUids);
-    await createLorebookEntries(__book,__names.map(__n=>__buildNpcEntry(__n,__people[__n])));
-    console.info('[官场模拟器] 开局人物已写入世界书',__book,__names.length,'人')
+    const __items=__names.map(__n=>({__n,__p:__people[__n],__aliases:__npcAliases(__n,__people[__n])}));
+    const __aliasCount={};
+    __items.forEach(__it=>{__it.__aliases.forEach(__a=>{__aliasCount[__a]=(__aliasCount[__a]||0)+1})});
+    const __collided={};
+    Object.keys(__aliasCount).forEach(__a=>{if(__aliasCount[__a]>=2)__collided[__a]=__items.filter(__it=>__it.__aliases.indexOf(__a)!==-1)});
+    const __toWrite=[];
+    __items.forEach(__it=>{
+      const __own=__it.__aliases.filter(__a=>__collided[__a]);
+      if(__own.length){
+        const __filters=[__it.__n].concat(__npcOrgWords(__it.__p));
+        const __u=__npcField(__it.__p.单位);
+        if(__u&&__filters.indexOf(__u)===-1)__filters.push(__u);
+        const __j=__npcField(__it.__p.职务);
+        if(__j&&__filters.indexOf(__j)===-1)__filters.push(__j);
+        __toWrite.push(__buildNpcEntry(__it.__n,__it.__p,[__it.__n].concat(__it.__aliases),__filters,'and_any'))
+      }else{
+        __toWrite.push(__buildNpcEntry(__it.__n,__it.__p))
+      }
+    });
+    Object.keys(__collided).forEach(__a=>{
+      const __isExt=Object.keys(__collided).some(__b=>__b!==__a&&__a.indexOf(__b)!==-1);
+      if(__isExt)return;
+      const __members=__collided[__a];
+      const __lines=[__members.length+'位简称「'+__a+'」，指代对象按上下文判定：'];
+      __members.forEach(__it=>{__lines.push(__memberLine(__it))});
+      __lines.push('上下文无法判定时，可自然开口追问对方身份');
+      __toWrite.push({comment:'【人物】'+__a,keys:[__a],position:'after_character_definition',content:__lines.join('\n')})
+    });
+    await createLorebookEntries(__book,__toWrite);
+    console.info('[官场模拟器] 开局人物已写入世界书',__book,__names.length,'人',Object.keys(__collided).length,'组撞名简称')
   }catch(__err){
     console.error('[官场模拟器] 开局人物写入世界书失败',__err)
   }
