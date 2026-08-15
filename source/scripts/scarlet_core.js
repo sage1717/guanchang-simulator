@@ -82,6 +82,31 @@ function __buildNpcEntry(__name,__p){
   if(__vals.length)__lines.push(__vals.join(' '));
   return{comment:'【人物】'+__name,keys:__npcKeys(__name,__p),position:'after_character_definition',content:__lines.join('\n')}
 }
+async function __cleanupOrphanChatLorebooks(){
+  try{
+    const __books=await getLorebooks();
+    const __orphans=(__books||[]).filter(__b=>__b&&__b.indexOf('Chat Book ')===0);
+    if(!__orphans.length)return;
+    const __live=new Set();
+    try{
+      const __resp=await fetch('/api/chats/recent',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"pinned":[]}'});
+      if(!__resp.ok)throw new Error('HTTP '+__resp.status);
+      const __list=await __resp.json();
+      (Array.isArray(__list)?__list:[]).forEach(__c=>{
+        if(__c&&__c.file_name)__live.add(String(__c.file_name).replace(/\.jsonl$/i,'').replace(/[^a-z0-9]/gi,'_').replace(/_{2,}/g,'_').substring(0,64))
+      })
+    }catch(__e){
+      console.warn('[官场模拟器] 获取聊天清单失败，跳过孤立世界书清理',__e);
+      return
+    }
+    for(const __b of __orphans){
+      if(!__live.has(__b.slice('Chat Book '.length))){
+        await deleteLorebook(__b);
+        console.info('[官场模拟器] 已清理孤立聊天世界书',__b)
+      }
+    }
+  }catch(__err){console.warn('[官场模拟器] 清理孤立聊天世界书失败',__err)}
+}
 async function __syncNpcsToChatLorebook(){
   try{
     const __mvu=(window.parent&&window.parent!==window?window.parent:window).Mvu||window.Mvu||(typeof globalThis!=='undefined'?globalThis.Mvu:null);
@@ -92,6 +117,7 @@ async function __syncNpcsToChatLorebook(){
     const __self=__npcField(__stat&&__stat.个人档案&&__stat.个人档案.基本信息&&__stat.个人档案.基本信息.姓名);
     const __names=Object.keys(__people).filter(__n=>__n&&__n!=='无'&&__n!==__self);
     if(!__names.length){console.warn('[官场模拟器] 人物库为空，跳过开局人物写入世界书');return}
+    await __cleanupOrphanChatLorebooks();
     const __book=await getOrCreateChatLorebook();
     const __existing=await getLorebookEntries(__book);
     const __oldUids=(__existing||[]).filter(__en=>(__en.comment||'').indexOf('【人物】')===0).map(__en=>__en.uid);
