@@ -140,12 +140,43 @@ async function __cleanupOrphanChatLorebooks(){
     }
   }catch(__err){console.warn('[官场模拟器] 清理孤立聊天世界书失败',__err)}
 }
+function __checkStartupCompleteness(__stat){
+  const __miss=[];
+  const __chk=(__v,__label)=>{if(__v==null||(typeof __v==='string'&&(!__v.trim()||__v==='无'))||(Array.isArray(__v)&&!__v.length))__miss.push(__label)};
+  const __t=__stat.时空舆情||{};
+  __chk(__t.当前日期&&__t.当前日期.年,'日期');
+  __chk(__t.当前时间,'当前时间');
+  __chk(__t.当前地点,'当前地点');
+  __chk(__t.重大事件,'重大事件');
+  __chk(__t.中央动态,'中央动态');
+  __chk(__t.省内风向,'省内风向');
+  __chk(__t.本地新闻,'本地新闻');
+  __chk(__t.圈内传闻,'圈内传闻');
+  __chk(__t.个人风评,'个人风评');
+  const __s=__stat.当前场景||{};
+  __chk(__s.场景类型,'场景类型');
+  __chk(__s.场景速写,'场景速写');
+  __chk(__s.气氛基调,'气氛基调');
+  __chk(__s.在场人物,'在场人物');
+  __chk(__s.潜在议题,'潜在议题');
+  const __o=__stat.机遇与危机||{};
+  const __cnt=__k=>__k&&typeof __k==='object'?Object.keys(__k).length:0;
+  if(!__cnt(__o.当前机遇))__miss.push('当前机遇');
+  if(!__cnt(__o.潜在危机))__miss.push('潜在危机');
+  if(!__cnt(__o.待办事项))__miss.push('待办事项');
+  return __miss
+}
 async function __syncNpcsToChatLorebook(){
   try{
     const __mvu=(window.parent&&window.parent!==window?window.parent:window).Mvu||window.Mvu||(typeof globalThis!=='undefined'?globalThis.Mvu:null);
     if(!__mvu||typeof __mvu.getMvuData!=='function'){console.warn('[官场模拟器] MVU不可用，跳过开局人物写入世界书');return}
     const __res=await __mvu.getMvuData({type:'message',message_id:0});
     const __stat=(__res&&(__res.stat_data||__res.data&&__res.data.stat_data))||{};
+    const __miss=__checkStartupCompleteness(__stat);
+    if(__miss.length){
+      console.warn('[官场模拟器] 开局变量存在空白字段:',__miss.join('、'));
+      try{toastr.warning('开局变量以下字段为空白，建议重新生成开局变量：'+__miss.join('、'),'[官场模拟器]',{timeOut:15000})}catch{}
+    }
     const __people=(__stat&&typeof __stat.人物库==='object'&&__stat.人物库)||{};
     const __self=__npcField(__stat&&__stat.个人档案&&__stat.个人档案.基本信息&&__stat.个人档案.基本信息.姓名);
     const __names=Object.keys(__people).filter(__n=>__n&&__n!=='无'&&__n!==__self);
