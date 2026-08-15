@@ -58,64 +58,41 @@ function __buildNpcEntry(__name,__p,__keys,__filters,__logic){
   __p=__p&&typeof __p==='object'?__p:{};
   const __f=__npcField;
   const __head=[__name,__f(__p.性别),__p.年龄>0?String(__p.年龄)+'岁':'',__f(__p.体系)+(__f(__p.级别)?'·'+__f(__p.级别):''),__f(__p.职务)+(__f(__p.单位)?'（'+__f(__p.单位)+'）':''),__f(__p.派系)].filter(Boolean).join('｜');
-  const __lines=[__head];
+  const __lines=['【开局时点人设锚点】本条目锁定该人物开局时的稳定特质，剧情中的动态变化以变量为准。',__f(__p.婚姻状态)?__head+'｜'+__f(__p.婚姻状态):__head];
   const __tags=Array.isArray(__p.角色标签)?__p.角色标签.map(__f).filter(Boolean):[];
   if(__tags.length)__lines.push('身份：'+__tags.join('、'));
-  if(__f(__p.当前状态))__lines.push('当前状态：'+__f(__p.当前状态));
-  if(__f(__p.状态)&&__f(__p.状态)!==__f(__p.当前状态))__lines.push('状态：'+__f(__p.状态));
   const __g=__p.官场关系;
   if(__g&&typeof __g==='object'){
-    const __bits=[];
-    if(__f(__g.立场倾向))__bits.push('立场：'+__f(__g.立场倾向));
-    if(__f(__g.威胁等级))__bits.push('威胁：'+__f(__g.威胁等级));
-    if(__f(__g.敌对原因))__bits.push('敌意：'+__f(__g.敌对原因));
-    if(__f(__g.已知弱点))__bits.push('弱点：'+__f(__g.已知弱点));
-    if(__f(__g.利用价值))__bits.push('价值：'+__f(__g.利用价值));
-    if(__f(__g.近期动向))__bits.push('动向：'+__f(__g.近期动向));
     const __rel=__f(__g.关系类型)+(__f(__g.关系来源)?'（'+__f(__g.关系来源)+'）':'');
-    if(__rel||__bits.length)__lines.push('与主角：'+(__rel?__rel+(__bits.length?'；':'')+__bits.join('；'):__bits.join('；')))
+    if(__rel)__lines.push('与主角：'+__rel)
   }
   const __s=__p.绯色关系;
   if(__s&&typeof __s==='object'){
     const __bits=[];
-    if(__f(__s.关系阶段))__bits.push(__f(__s.关系阶段)+(__f(__s.关系性质)?'（'+__f(__s.关系性质)+'）':''));
     if(__f(__s.外貌))__bits.push('外貌：'+__f(__s.外貌));
     if(__f(__s.性格))__bits.push('性格：'+__f(__s.性格));
-    if(__f(__s.情绪状态))__bits.push('情绪：'+__f(__s.情绪状态));
-    if(typeof __s.危险度==='number'&&__s.危险度>0)__bits.push('危险度：'+__s.危险度);
-    if(__f(__s.近期事件))__bits.push('近事：'+__f(__s.近期事件));
-    if(__bits.length)__lines.push('绯色关系：'+__bits.join('；'))
+    const __stags=Array.isArray(__s.身份标签)?__s.身份标签.map(__f).filter(Boolean):[];
+    if(__stags.length)__bits.push('标签：'+__stags.join('、'));
+    const __phs=__s.性癖好&&typeof __s.性癖好==='object'?Object.keys(__s.性癖好).filter(__k=>__k&&__k!=='无'):[];
+    if(__phs.length)__bits.push('癖好：'+__phs.join('、'));
+    if(__bits.length)__lines.push('特质：'+__bits.join('；'))
   }
   const __c=__p.竞争关系;
-  if(__c&&typeof __c==='object'){
-    const __bits=[];
-    if(__f(__c.竞争目标))__bits.push('目标：'+__f(__c.竞争目标));
-    if(__f(__c.竞争态势))__bits.push(__f(__c.竞争态势));
-    if(__f(__c.对方软肋))__bits.push('软肋：'+__f(__c.对方软肋));
-    if(__f(__c.背后靠山))__bits.push('靠山：'+__f(__c.背后靠山));
-    if(__bits.length)__lines.push('竞争关系：'+__bits.join('；'))
-  }
+  if(__c&&typeof __c==='object'&&__f(__c.竞争目标))__lines.push('竞争：'+__f(__c.竞争目标));
   const __k=__p.靠山关系;
   if(__k&&typeof __k==='object'){
     const __bits=[];
     if(__f(__k.紧密度))__bits.push(__f(__k.紧密度));
     if(__f(__k.提携内容))__bits.push('提携：'+__f(__k.提携内容));
-    if(__f(__k.预期回报))__bits.push('回报：'+__f(__k.预期回报));
-    if(__bits.length)__lines.push('靠山关系：'+__bits.join('；'))
+    if(__bits.length)__lines.push('靠山：'+__bits.join('；'))
   }
   const __h=__p.家庭关系;
   if(__h&&typeof __h==='object'){
     const __bits=[];
     if(__f(__h.关系))__bits.push(__f(__h.关系));
-    if(__f(__h.态度))__bits.push('态度：'+__f(__h.态度));
     if(__f(__h.知悉内情))__bits.push('知悉：'+__f(__h.知悉内情));
-    if(__bits.length)__lines.push('家庭关系：'+__bits.join('；'))
+    if(__bits.length)__lines.push('家庭：'+__bits.join('；'))
   }
-  const __vals=[];
-  if(typeof __p.好感度==='number')__vals.push('好感'+__p.好感度);
-  if(typeof __p.信任度==='number')__vals.push('信任'+__p.信任度);
-  if(typeof __p.忠诚度==='number')__vals.push('忠诚'+__p.忠诚度);
-  if(__vals.length)__lines.push(__vals.join(' '));
   const __entry={comment:'【人物】'+__name,keys:__keys||[__name].concat(__npcAliases(__name,__p)),position:'after_character_definition',content:__lines.join('\n')};
   if(__filters&&__filters.length)__entry.filters=__filters;
   if(__logic)__entry.logic=__logic;
