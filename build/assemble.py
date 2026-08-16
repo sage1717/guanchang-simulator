@@ -30,14 +30,12 @@ def main():
         if fn.startswith('script_') and fn.endswith('.json'):
             scripts.append(load_json(os.path.join('scripts', fn)))
     # single source of truth for script bodies:
-    # 变量验证 -> scarlet_core.js, MVU -> stable bundle import, 人物世界书同步 -> npc_lorebook_sync.js
+    # 变量验证 -> scarlet_core.js, MVU -> stable bundle import
     for s in scripts:
         if s['name'] == '变量验证':
             s['content'] = read(os.path.join('scripts', 'scarlet_core.js'))
         elif s['name'] == 'MVU':
             s['content'] = "import 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js';"
-        elif s['name'] == '人物世界书同步':
-            s['content'] = read(os.path.join('scripts', 'npc_lorebook_sync.js'))
     extras = load_json('extensions_other.json')
     wb_manifest = load_json(os.path.join('worldbook', 'manifest.json'))
 
@@ -117,7 +115,7 @@ def main():
     checks = []
     checks.append(('spec v3', card['spec'] == 'chara_card_v3'))
     checks.append(('entries=42', len(entries) == 42))
-    checks.append(('scripts=3', len(scripts) == 3))
+    checks.append(('scripts=2', len(scripts) == 2))
     checks.append(('regex=6', len(regex) == 6))
     checks.append(('no apiConfig', all('apiConfig' not in s.get('data', {}) for s in scripts)))
     checks.append(('no klona', all('klona' not in s['content'] for s in scripts)))

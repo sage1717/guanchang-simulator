@@ -1245,7 +1245,7 @@
   "id": 28,
   "keys": [],
   "secondary_keys": [],
-  "comment": "[mvu_plot] 人物演绎铁律",
+  "comment": "[mvu_plot] NPC生成与回收",
   "constant": true,
   "selective": true,
   "insertion_order": 303,
@@ -1285,7 +1285,7 @@
    "triggers": [],
    "ignore_budget": false
   },
-  "file": "28_[mvu_plot] 人物演绎铁律.md"
+  "file": "28_[mvu_plot] NPC生成与回收.md"
  },
  {
   "id": 29,
