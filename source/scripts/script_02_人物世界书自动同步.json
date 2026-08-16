@@ -1,0 +1,17 @@
+{
+ "type": "script",
+ "enabled": true,
+ "name": "人物世界书自动同步",
+ "id": "d2b5c8f1-4a7e-4b9d-9c3a-7f6e5d4c3b2a",
+ "content": "",
+ "info": "变量更新后自动刷新聊天世界书人物条目（独立插件，不动运行时核心）",
+ "button": {
+  "enabled": false,
+  "buttons": []
+ },
+ "data": {},
+ "export_with": {
+  "data": true,
+  "button": true
+ }
+}

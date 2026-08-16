@@ -137,6 +137,7 @@ async function __cleanupOrphanChatLorebooks(){
 }
 async function __syncNpcsToChatLorebook(){
   try{
+    try{if('false'===window.parent.localStorage.getItem('scarlet_worldbook_startup_write')){console.info('[官场模拟器] 开局人物世界书写入已关闭，跳过');return}}catch{}
     const __mvu=(window.parent&&window.parent!==window?window.parent:window).Mvu||window.Mvu||(typeof globalThis!=='undefined'?globalThis.Mvu:null);
     if(!__mvu||typeof __mvu.getMvuData!=='function'){console.warn('[官场模拟器] MVU不可用，跳过开局人物写入世界书');return}
     const __res=await __mvu.getMvuData({type:'message',message_id:0});

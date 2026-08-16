@@ -34,6 +34,8 @@ def main():
     for s in scripts:
         if s['name'] == '变量验证':
             s['content'] = read(os.path.join('scripts', 'scarlet_core.js'))
+        elif s['name'] == '人物世界书自动同步':
+            s['content'] = read(os.path.join('scripts', 'npc_lorebook_autosync.js'))
         elif s['name'] == 'MVU':
             s['content'] = "import 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js';"
     extras = load_json('extensions_other.json')
@@ -115,7 +117,7 @@ def main():
     checks = []
     checks.append(('spec v3', card['spec'] == 'chara_card_v3'))
     checks.append(('entries=42', len(entries) == 42))
-    checks.append(('scripts=2', len(scripts) == 2))
+    checks.append(('scripts=3', len(scripts) == 3))
     checks.append(('regex=6', len(regex) == 6))
     checks.append(('no apiConfig', all('apiConfig' not in s.get('data', {}) for s in scripts)))
     checks.append(('no klona', all('klona' not in s['content'] for s in scripts)))
