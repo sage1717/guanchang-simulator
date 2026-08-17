@@ -15,6 +15,12 @@ const 时间格式 = z
   .or(z.literal('无'))
   .prefault('无');
 
+// ========== 核心类型 ==========
+const 性别枚举 = 可选文本;
+const 体系枚举 = 可选文本;
+const 婚姻状态枚举 = 可选文本;
+const 政治气候枚举 = 可选文本;
+
 // ========== 关系扩展 Schema ==========
 export const 官场关系Schema = z
   .object({

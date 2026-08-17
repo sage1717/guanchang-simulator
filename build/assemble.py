@@ -33,10 +33,17 @@ def main():
     # 变量验证 -> scarlet_core.js, MVU -> stable bundle import
     for s in scripts:
         if s['name'] == '变量验证':
+            assert s.get('content', '') == '', "script_01 wrapper content must stay empty"
+            assert s.get('data', {}).get('enableExtraModelParsing') is False, "card-side extra parsing must stay disabled"
             s['content'] = read(os.path.join('scripts', 'scarlet_core.js'))
+            assert "enableExtraModelParsing:a.z.boolean().default(!1)" in s['content'], "card-side extra parsing schema default must stay false"
+            assert "SillyTavern.extensionSettings.mvu_settings.更新方式='额外模型解析'" in s['content'], "MVU plugin default mode must be extra-model parsing"
+            assert "I.enableExtraModelParsing?(se(),ue()):ie()" in s['content'], "MVU plugin mode must be applied during initialization"
         elif s['name'] == '人物世界书自动同步':
+            assert s.get('content', '') == '', "script_02 wrapper content must stay empty"
             s['content'] = read(os.path.join('scripts', 'npc_lorebook_autosync.js'))
         elif s['name'] == 'MVU':
+            assert [b['name'] for b in s['button']['buttons'] if b.get('visible')] == ['重试额外模型解析'], "MVU script must expose only the retry extra-model button"
             s['content'] = "import 'https://testingcf.jsdelivr.net/gh/MagicalAstrogy/MagVarUpdate/artifact/bundle.js';"
     extras = load_json('extensions_other.json')
     wb_manifest = load_json(os.path.join('worldbook', 'manifest.json'))
@@ -45,6 +52,7 @@ def main():
     scarlet_html = read(os.path.join('ui', 'scarlet', 'index.html'))
     assert '```' not in scarlet_html, "fence collision in scarlet UI"
     statusbar = next(r for r in regex if r['scriptName'] == '状态栏')
+    assert statusbar['replaceString'] == '__SCARLET_UI_EMBEDDED_BY_ASSEMBLER__', "statusbar source must use assembler placeholder"
     statusbar['replaceString'] = "```html\n" + scarlet_html + "\n```"
     regex = [statusbar if r['scriptName'] == '状态栏' else r for r in regex]
 
@@ -124,6 +132,9 @@ def main():
     checks.append(('no @beta', all('@beta' not in s['content'] for s in scripts)))
     checks.append(('no depth_prompt', 'depth_prompt' not in extensions))
     checks.append(('ui embedded scarlet (localized)', 'HymnStudio' not in regex[1]['replaceString'] and regex[1]['replaceString'].startswith('```html')))
+    checks.append(('script_01 injected from scarlet_core.js', next(s for s in scripts if s['name'] == '变量验证')['content'] == read(os.path.join('scripts', 'scarlet_core.js'))))
+    checks.append(('script_02 injected from npc_lorebook_autosync.js', next(s for s in scripts if s['name'] == '人物世界书自动同步')['content'] == read(os.path.join('scripts', 'npc_lorebook_autosync.js'))))
+    checks.append(('statusbar placeholder consumed', '__SCARLET_UI_EMBEDDED_BY_ASSEMBLER__' not in statusbar['replaceString']))
     checks.append(('world kept', extensions.get('world') == '官场模拟器'))
     checks.append(('first_mes kept', card['first_mes'] == '[初始化完成]\r\n<StatusPlaceHolderImpl/>'))
     for name, ok in checks:

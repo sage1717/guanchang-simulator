@@ -20,7 +20,7 @@
   "id": "5da58b13-5a88-4b0d-8e34-7181053cf7e1",
   "scriptName": "状态栏",
   "findRegex": "<StatusPlaceHolderImpl/>",
-  "replaceString": "```\n<body>\n  <script>\n    $('body').load('https://testingcf.jsdelivr.net/gh/HymnStudio/card_rs/scarlet/index.html')\n  </script>\n</body>\n```",
+  "replaceString": "__SCARLET_UI_EMBEDDED_BY_ASSEMBLER__",
   "trimStrings": [],
   "placement": [
    2
