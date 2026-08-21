@@ -6,7 +6,7 @@
   "first_mes": "[初始化完成]\r\n<StatusPlaceHolderImpl/>",
   "mes_example": "",
   "creatorcomment": "",
-  "create_date": "2026-04-02T19:29:15.922Z",
+  "create_date": "2026-08-19T08:48:17.411Z",
   "talkativeness": "0.5",
   "fav": false,
   "tags": [],
@@ -15,5 +15,5 @@
   "system_prompt": "",
   "post_history_instructions": "",
   "creator": "",
-  "character_version": "V1.35"
+  "character_version": "V1.5"
 }
